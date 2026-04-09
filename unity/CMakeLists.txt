@@ -14,12 +14,17 @@ endif()
 add_subdirectory(${WCDB_ROOT}/src ${CMAKE_CURRENT_BINARY_DIR}/wcdb-upstream)
 
 if(APPLE AND CMAKE_SYSTEM_NAME STREQUAL "iOS")
-    # Override upstream's hardcoded -flto to produce native Mach-O objects
-    # that libtool and xcodebuild -create-xcframework can process.
-    target_compile_options(wcdb PRIVATE -fno-lto)
-    target_compile_options(sqlcipher PRIVATE -fno-lto)
+    # Disable compiler-level -flto (from upstream) to produce Mach-O .o files
+    # instead of LLVM bitcode, which libtool/xcframework cannot process.
+    # Then re-enable LTO via Xcode's build setting so dead code elimination
+    # still happens at link time.
+    foreach(tgt wcdb sqlcipher)
+        target_compile_options(${tgt} PRIVATE -fno-lto)
+        set_target_properties(${tgt} PROPERTIES XCODE_ATTRIBUTE_LLVM_LTO YES)
+    endforeach()
     if(TARGET zstd)
         target_compile_options(zstd PRIVATE -fno-lto)
+        set_target_properties(zstd PROPERTIES XCODE_ATTRIBUTE_LLVM_LTO YES)
     endif()
 endif()
 

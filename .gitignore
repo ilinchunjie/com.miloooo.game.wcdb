@@ -3,3 +3,4 @@ unity/package-template/Plugins/Runtime/obj/
 dist/
 .build/
 *.DS_Store
+unity/package/Plugins/Runtime/obj
