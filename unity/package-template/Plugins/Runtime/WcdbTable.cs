@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Miloooo.WCDB.Internal;
+using com.miloooo.game.wcdb.Internal;
 
-namespace Miloooo.WCDB
+namespace com.miloooo.game.wcdb
 {
     public sealed class WcdbTable
     {

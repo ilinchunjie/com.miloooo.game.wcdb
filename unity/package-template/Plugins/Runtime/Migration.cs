@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Miloooo.WCDB
+namespace com.miloooo.game.wcdb
 {
     public sealed class MigrationBuilder
     {

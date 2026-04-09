@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
-namespace Miloooo.WCDB.Internal
+namespace com.miloooo.game.wcdb.Internal
 {
     internal sealed class NativeStringScope : IDisposable
     {

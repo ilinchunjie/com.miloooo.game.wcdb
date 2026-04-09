@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Miloooo.WCDB
+namespace com.miloooo.game.wcdb
 {
     public sealed class WcdbQueryResult : IEnumerable<RowData>, IDisposable
     {

@@ -1,6 +1,6 @@
 {
   "name": "Miloooo.WCDB",
-  "rootNamespace": "Miloooo.WCDB",
+  "rootNamespace": "com.miloooo.game.wcdb",
   "references": [],
   "includePlatforms": [],
   "excludePlatforms": [],

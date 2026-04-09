@@ -4,7 +4,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>disable</ImplicitUsings>
     <LangVersion>latest</LangVersion>
-    <RootNamespace>Miloooo.WCDB</RootNamespace>
+    <RootNamespace>com.miloooo.game.wcdb</RootNamespace>
     <RestoreIgnoreFailedSources>true</RestoreIgnoreFailedSources>
   </PropertyGroup>
 </Project>

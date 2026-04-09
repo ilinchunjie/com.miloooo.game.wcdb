@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace Miloooo.WCDB.Internal
+namespace com.miloooo.game.wcdb.Internal
 {
     internal static class WcdbNative
     {

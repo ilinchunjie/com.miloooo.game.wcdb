@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
-using Miloooo.WCDB.Internal;
+using com.miloooo.game.wcdb.Internal;
 
-namespace Miloooo.WCDB
+namespace com.miloooo.game.wcdb
 {
     public sealed class WcdbDatabaseOptions
     {

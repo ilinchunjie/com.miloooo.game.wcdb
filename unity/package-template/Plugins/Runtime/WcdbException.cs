@@ -1,6 +1,6 @@
 using System;
 
-namespace Miloooo.WCDB
+namespace com.miloooo.game.wcdb
 {
     public sealed class WcdbException : Exception
     {
