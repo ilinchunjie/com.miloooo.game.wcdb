@@ -10,7 +10,7 @@ jobs:
     runs-on: windows-2022
     strategy:
       matrix:
-        arch: [Win32, x64]
+        arch: [x64]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -19,17 +19,13 @@ jobs:
         shell: bash
         run: |
           chmod +x unity/scripts/build-host.sh
-          if [[ "${{ matrix.arch }}" == "Win32" ]]; then
-            OUTPUT_ARCH="x86"
-          else
-            OUTPUT_ARCH="x86_64"
-          fi
+          OUTPUT_ARCH="x86_64"
           unity/scripts/build-host.sh windows "${{ matrix.arch }}" "${{ github.workspace }}/.build/windows-$OUTPUT_ARCH" "${{ github.workspace }}/artifacts/windows/$OUTPUT_ARCH"
       - name: Upload Windows artifacts
         uses: actions/upload-artifact@v4
         with:
           name: windows-${{ matrix.arch }}
-          path: artifacts/windows/${{ matrix.arch == 'Win32' && 'x86' || 'x86_64' }}
+          path: artifacts/windows/${{ 'x86_64' }}
 
   build-android:
     runs-on: ubuntu-24.04
@@ -116,9 +112,8 @@ jobs:
           cp -f downloaded-artifacts/apple-macos/libwcdb.dylib "$PKG/macOS/" || true
 
           # Windows
-          mkdir -p "$PKG/x86" "$PKG/x86_64"
-          cp -f downloaded-artifacts/windows-Win32/wcdb.dll  "$PKG/x86/"    || true
-          cp -f downloaded-artifacts/windows-x64/wcdb.dll    "$PKG/x86_64/" || true
+          mkdir -p "$PKG/x86_64"
+          cp -f downloaded-artifacts/windows-x64/wcdb.dll "$PKG/x86_64/" || true
 
       - name: Update package.json version
         run: |
