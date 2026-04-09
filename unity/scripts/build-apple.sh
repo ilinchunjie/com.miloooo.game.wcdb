@@ -35,12 +35,22 @@ case "$PLATFORM" in
             -DCMAKE_SYSTEM_NAME=iOS \
             -DCMAKE_OSX_ARCHITECTURES="arm64" \
             -DCMAKE_OSX_DEPLOYMENT_TARGET=13.0 \
-            -DCMAKE_BUILD_TYPE=Release \
             -DUNITY_WCDB_BUILD_TESTS=OFF
         cmake --build "$BUILD_ROOT" --config Release --target wcdb
-        LIB_PATH="$BUILD_ROOT/Release-iphoneos/libwcdb.a"
+        MERGED_LIB_PATH="$BUILD_ROOT/libwcdb_merged.a"
+        LIBTOOL_INPUTS=("$BUILD_ROOT/Release-iphoneos/libwcdb.a")
+        for dep in libsqlcipher.a libzstd.a; do
+            if [[ -f "$BUILD_ROOT/wcdb-upstream/Release-iphoneos/$dep" ]]; then
+                LIBTOOL_INPUTS+=("$BUILD_ROOT/wcdb-upstream/Release-iphoneos/$dep")
+            fi
+        done
+        libtool -static -o "$MERGED_LIB_PATH" "${LIBTOOL_INPUTS[@]}"
+        strip -x "$MERGED_LIB_PATH"
+        mv "$MERGED_LIB_PATH" "$BUILD_ROOT/libwcdb.a"
+        MERGED_LIB_PATH="$BUILD_ROOT/libwcdb.a"
+        rm -rf "$OUTPUT_DIR/wcdb.xcframework"
         xcodebuild -create-xcframework \
-            -library "$LIB_PATH" \
+            -library "$MERGED_LIB_PATH" \
             -output "$OUTPUT_DIR/wcdb.xcframework"
         ;;
     *)

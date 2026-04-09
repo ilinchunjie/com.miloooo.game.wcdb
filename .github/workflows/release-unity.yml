@@ -6,31 +6,6 @@ on:
       - "v*"
 
 jobs:
-  build-linux:
-    runs-on: ${{ matrix.runner }}
-    strategy:
-      matrix:
-        include:
-          - arch: x86_64
-            runner: ubuntu-24.04
-          - arch: arm64
-            runner: ubuntu-24.04-arm
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: recursive
-      - name: Install build tools
-        run: sudo apt-get update && sudo apt-get install -y cmake ninja-build build-essential
-      - name: Build Linux
-        run: |
-          chmod +x unity/scripts/build-host.sh
-          unity/scripts/build-host.sh linux "${{ matrix.arch }}" "${{ github.workspace }}/.build/linux-${{ matrix.arch }}" "${{ github.workspace }}/artifacts/linux/${{ matrix.arch }}"
-      - name: Upload Linux artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: linux-${{ matrix.arch }}
-          path: artifacts/linux/${{ matrix.arch }}
-
   build-windows:
     runs-on: windows-2022
     strategy:
@@ -105,7 +80,6 @@ jobs:
   assemble-package:
     runs-on: ubuntu-24.04
     needs:
-      - build-linux
       - build-windows
       - build-android
       - build-apple
@@ -120,8 +94,6 @@ jobs:
       - name: Normalize artifacts
         run: |
           mkdir -p artifacts
-          cp -R downloaded-artifacts/linux-x86_64/. artifacts/linux/x86_64/
-          cp -R downloaded-artifacts/linux-arm64/. artifacts/linux/arm64/
           cp -R downloaded-artifacts/windows-Win32/. artifacts/windows/x86/
           cp -R downloaded-artifacts/windows-x64/. artifacts/windows/x86_64/
           cp -R downloaded-artifacts/android-armeabi-v7a/. artifacts/android/armeabi-v7a/

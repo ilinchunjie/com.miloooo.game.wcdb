@@ -1,6 +1,7 @@
 #include "wcdb_unity.h"
 
-#include "sqlite3.h"
+#include <sqlcipher/sqlite3.h>
+#include <sqlcipher/sqlcipher.h>
 
 #include <algorithm>
 #include <sstream>
@@ -174,7 +175,7 @@ int wcdb_has_feature(int feature)
         return 0;
 #endif
     case WCDB_FEATURE_FTS:
-#if defined(SQLITE_ENABLE_FTS5)
+#if defined(SQLITE_ENABLE_FTS3) || defined(SQLITE_ENABLE_FTS5)
         return 1;
 #else
         return 0;
@@ -198,6 +199,11 @@ int wcdb_has_feature(int feature)
         return 0;
 #endif
     case WCDB_FEATURE_ZSTD:
+#if defined(WCDB_ZSTD)
+        return 1;
+#else
+        return 0;
+#endif
     case WCDB_FEATURE_TRACE:
     default:
         return 0;

@@ -17,25 +17,32 @@ This package publishes `com.miloooo.game.wcdb` as a Unity UPM package with a siz
 
 The release workflow builds a smallest-possible flavor by default:
 
-- `UNITY_WCDB_ENABLE_CIPHER=OFF`
-- `UNITY_WCDB_ENABLE_JSON1=OFF`
-- `UNITY_WCDB_ENABLE_FTS=OFF`
-- `UNITY_WCDB_ENABLE_RTREE=OFF`
-- `UNITY_WCDB_ENABLE_SESSION=OFF`
-- `UNITY_WCDB_ENABLE_PREUPDATE_HOOK=OFF`
-- `UNITY_WCDB_ENABLE_ZSTD=OFF`
-- `UNITY_WCDB_ENABLE_REPAIR=OFF`
-- `UNITY_WCDB_ENABLE_WCDB_NATIVE_MIGRATION=OFF`
-- `UNITY_WCDB_ENABLE_TRACE=OFF`
+- `WCDB_CPP=OFF`
+- `WCDB_BRIDGE=OFF`
+- `WCDB_ZSTD=OFF`
+- `SQLCIPHER_ENABLE_CIPHER=OFF`
+- `SQLCIPHER_ENABLE_JSON1=OFF`
+- `SQLCIPHER_ENABLE_FTS3=OFF`
+- `SQLCIPHER_ENABLE_FTS5=OFF`
+- `SQLCIPHER_ENABLE_RTREE=OFF`
+- `SQLCIPHER_ENABLE_SESSION=OFF`
+- `SQLCIPHER_ENABLE_PREUPDATE_HOOK=OFF`
+- `SQLCIPHER_ENABLE_STAT4=OFF`
+- `SQLCIPHER_ENABLE_EXPLAIN_COMMENTS=OFF`
+- `SQLCIPHER_ENABLE_DBSTAT_VTAB=OFF`
+- `SQLCIPHER_ENABLE_COLUMN_METADATA=OFF`
+- `WCDB_ENABLE_REPAIR=OFF`
+- `WCDB_ENABLE_NATIVE_MIGRATION=OFF`
+- `WCDB_ENABLE_TRACE=OFF`
 
 Recommended default for the main package:
 
-- Keep `CIPHER` off unless you intentionally ship an encrypted flavor.
-- Keep `JSON1` off unless SQL-side JSON querying is required.
-- Keep `FTS` off unless you need full-text search.
-- Keep `RTREE` off unless you need spatial indexing.
-- Keep `SESSION` and `PREUPDATE_HOOK` off unless you explicitly need change capture.
-- Keep `ZSTD`, `REPAIR`, native migration, and trace off for the Unity minimal build.
+- Keep `SQLCIPHER_ENABLE_CIPHER` off unless you intentionally ship an encrypted flavor.
+- Keep `SQLCIPHER_ENABLE_JSON1` off unless SQL-side JSON querying is required.
+- Keep `SQLCIPHER_ENABLE_FTS3` and `SQLCIPHER_ENABLE_FTS5` off unless you need full-text search.
+- Keep `SQLCIPHER_ENABLE_RTREE` off unless you need spatial indexing.
+- Keep `SQLCIPHER_ENABLE_SESSION` and `SQLCIPHER_ENABLE_PREUPDATE_HOOK` off unless you explicitly need change capture.
+- Keep `WCDB_ZSTD`, `WCDB_ENABLE_REPAIR`, native migration, and trace off for the Unity minimal build.
 
 ## Performance Model
 

@@ -28,3 +28,4 @@ cmake -S "$ROOT_DIR/unity" \
 
 cmake --build "$BUILD_DIR" --config Release --target wcdb
 cp "$BUILD_DIR/libwcdb.so" "$OUTPUT_DIR/libwcdb.so"
+"$NDK_PATH/toolchains/llvm/prebuilt/"*/bin/llvm-strip --strip-unneeded "$OUTPUT_DIR/libwcdb.so"
