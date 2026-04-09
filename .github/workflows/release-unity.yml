@@ -1,0 +1,167 @@
+name: release-unity
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build-linux:
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      matrix:
+        include:
+          - arch: x86_64
+            runner: ubuntu-24.04
+          - arch: arm64
+            runner: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Install build tools
+        run: sudo apt-get update && sudo apt-get install -y cmake ninja-build build-essential
+      - name: Build Linux
+        run: |
+          chmod +x unity/scripts/build-host.sh
+          unity/scripts/build-host.sh linux "${{ matrix.arch }}" "${{ github.workspace }}/.build/linux-${{ matrix.arch }}" "${{ github.workspace }}/artifacts/linux/${{ matrix.arch }}"
+      - name: Upload Linux artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-${{ matrix.arch }}
+          path: artifacts/linux/${{ matrix.arch }}
+
+  build-windows:
+    runs-on: windows-2022
+    strategy:
+      matrix:
+        arch: [Win32, x64]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Build Windows
+        shell: bash
+        run: |
+          chmod +x unity/scripts/build-host.sh
+          if [[ "${{ matrix.arch }}" == "Win32" ]]; then
+            OUTPUT_ARCH="x86"
+          else
+            OUTPUT_ARCH="x86_64"
+          fi
+          unity/scripts/build-host.sh windows "${{ matrix.arch }}" "${{ github.workspace }}/.build/windows-$OUTPUT_ARCH" "${{ github.workspace }}/artifacts/windows/$OUTPUT_ARCH"
+      - name: Upload Windows artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-${{ matrix.arch }}
+          path: artifacts/windows/${{ matrix.arch == 'Win32' && 'x86' || 'x86_64' }}
+
+  build-android:
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        abi: [armeabi-v7a, arm64-v8a, x86_64]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Setup Android NDK
+        uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: r26d
+      - name: Install CMake
+        run: sudo apt-get update && sudo apt-get install -y cmake ninja-build
+      - name: Build Android
+        run: |
+          chmod +x unity/scripts/build-android.sh
+          unity/scripts/build-android.sh "${{ matrix.abi }}" "$ANDROID_NDK_ROOT" "${{ github.workspace }}/artifacts/android/${{ matrix.abi }}"
+      - name: Upload Android artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-${{ matrix.abi }}
+          path: artifacts/android/${{ matrix.abi }}
+
+  build-apple:
+    runs-on: macos-14
+    strategy:
+      matrix:
+        platform: [macos, ios]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Ensure CMake
+        run: brew install cmake || true
+      - name: Build Apple
+        run: |
+          chmod +x unity/scripts/build-apple.sh
+          unity/scripts/build-apple.sh "${{ matrix.platform }}" "${{ github.workspace }}/artifacts/${{ matrix.platform }}"
+      - name: Upload Apple artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: apple-${{ matrix.platform }}
+          path: artifacts/${{ matrix.platform }}
+
+  assemble-package:
+    runs-on: ubuntu-24.04
+    needs:
+      - build-linux
+      - build-windows
+      - build-android
+      - build-apple
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: downloaded-artifacts
+      - name: Normalize artifacts
+        run: |
+          mkdir -p artifacts
+          cp -R downloaded-artifacts/linux-x86_64/. artifacts/linux/x86_64/
+          cp -R downloaded-artifacts/linux-arm64/. artifacts/linux/arm64/
+          cp -R downloaded-artifacts/windows-Win32/. artifacts/windows/x86/
+          cp -R downloaded-artifacts/windows-x64/. artifacts/windows/x86_64/
+          cp -R downloaded-artifacts/android-armeabi-v7a/. artifacts/android/armeabi-v7a/
+          cp -R downloaded-artifacts/android-arm64-v8a/. artifacts/android/arm64-v8a/
+          cp -R downloaded-artifacts/android-x86_64/. artifacts/android/x86_64/
+          cp -R downloaded-artifacts/apple-macos/. artifacts/macos/
+          cp -R downloaded-artifacts/apple-ios/. artifacts/ios/
+      - name: Assemble UPM package
+        run: |
+          chmod +x unity/scripts/assemble-package.sh
+          VERSION="${GITHUB_REF_NAME#v}"
+          unity/scripts/assemble-package.sh --version "$VERSION" --artifacts "${{ github.workspace }}/artifacts" --output "${{ github.workspace }}/dist/com.miloooo.game.wcdb"
+      - name: Zip package
+        run: |
+          cd dist
+          zip -r com.miloooo.game.wcdb.zip com.miloooo.game.wcdb
+      - name: Record package size
+        run: |
+          du -sh dist/com.miloooo.game.wcdb dist/com.miloooo.game.wcdb.zip >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload package artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: com.miloooo.game.wcdb
+          path: |
+            dist/com.miloooo.game.wcdb
+            dist/com.miloooo.game.wcdb.zip
+
+  publish-release:
+    runs-on: ubuntu-24.04
+    needs: assemble-package
+    permissions:
+      contents: write
+    steps:
+      - name: Download package
+        uses: actions/download-artifact@v4
+        with:
+          name: com.miloooo.game.wcdb
+          path: dist
+      - name: Publish GitHub release assets
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/com.miloooo.game.wcdb.zip

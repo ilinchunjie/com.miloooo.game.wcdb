@@ -1,0 +1,33 @@
+{
+  "name": "com.miloooo.game.wcdb",
+  "version": "0.0.0",
+  "displayName": "Miloooo WCDB",
+  "description": "A minimal native WCDB/SQLite package for Unity with compact cross-platform binaries and a data-driven C# API.",
+  "unity": "2021.3",
+  "keywords": [
+    "database",
+    "sqlite",
+    "wcdb",
+    "unity"
+  ],
+  "author": {
+    "name": "Miloooo"
+  },
+  "samples": [
+    {
+      "displayName": "Basic CRUD",
+      "description": "Open a database, create a table, and perform basic CRUD operations.",
+      "path": "Samples~/BasicCrud"
+    },
+    {
+      "displayName": "Batch CRUD",
+      "description": "Use bulk inserts and cursor-based queries for high-throughput data access.",
+      "path": "Samples~/BatchCrud"
+    },
+    {
+      "displayName": "Version Migration",
+      "description": "Apply user_version-driven schema migrations with idempotent C# scripts.",
+      "path": "Samples~/VersionMigration"
+    }
+  ]
+}

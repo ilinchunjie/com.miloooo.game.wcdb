@@ -1,0 +1,4 @@
+unity/package-template/Plugins/Runtime/bin/
+unity/package-template/Plugins/Runtime/obj/
+dist/
+.build/
