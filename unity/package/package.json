@@ -1,7 +1,7 @@
 {
   "name": "com.miloooo.game.wcdb",
   "version": "0.0.6",
-  "displayName": "Miloooo WCDB",
+  "displayName": "WCDB",
   "description": "A minimal native WCDB/SQLite package for Unity with compact cross-platform binaries and a data-driven C# API.",
   "unity": "2021.3",
   "keywords": [
@@ -11,7 +11,7 @@
     "unity"
   ],
   "author": {
-    "name": "Miloooo"
+    "name": "miloooo"
   },
   "samples": [
     {

@@ -1,0 +1,14 @@
+{
+    "name": "com.miloooo.game.wcdb",
+    "rootNamespace": "com.miloooo.game.wcdb",
+    "references": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
