@@ -38,10 +38,11 @@ case "$PLATFORM" in
             -DUNITY_WCDB_BUILD_TESTS=OFF
         cmake --build "$BUILD_ROOT" --config Release --target wcdb
         MERGED_LIB_PATH="$BUILD_ROOT/libwcdb_merged.a"
-        LIBTOOL_INPUTS=("$BUILD_ROOT/Release-iphoneos/libwcdb.a")
-        for dep in libsqlcipher.a libzstd.a; do
-            if [[ -f "$BUILD_ROOT/wcdb-upstream/Release-iphoneos/$dep" ]]; then
-                LIBTOOL_INPUTS+=("$BUILD_ROOT/wcdb-upstream/Release-iphoneos/$dep")
+        LIBTOOL_INPUTS=()
+        for lib in libwcdb.a libsqlcipher.a libzstd.a; do
+            found=$(find "$BUILD_ROOT" -name "$lib" -not -path "*/Objects-normal/*" | head -1)
+            if [[ -n "$found" ]]; then
+                LIBTOOL_INPUTS+=("$found")
             fi
         done
         libtool -static -o "$MERGED_LIB_PATH" "${LIBTOOL_INPUTS[@]}"
