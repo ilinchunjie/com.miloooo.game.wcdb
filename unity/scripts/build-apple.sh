@@ -27,6 +27,13 @@ case "$PLATFORM" in
         cmake --build "$BUILD_ROOT" --config Release --target wcdb
         cp "$BUILD_ROOT/Release/libwcdb.dylib" "$OUTPUT_DIR/libwcdb.dylib"
         strip -x "$OUTPUT_DIR/libwcdb.dylib" || true
+        archs=$(lipo -archs "$OUTPUT_DIR/libwcdb.dylib")
+        if [[ " $archs " != *" arm64 "* || " $archs " != *" x86_64 "* ]]; then
+            echo "Expected macOS libwcdb.dylib to contain arm64 and x86_64 slices, got: $archs" >&2
+            exit 1
+        fi
+        codesign --force --sign - --timestamp=none "$OUTPUT_DIR/libwcdb.dylib"
+        codesign --verify --verbose=4 "$OUTPUT_DIR/libwcdb.dylib"
         ;;
     ios)
         cmake -S "$ROOT_DIR/unity" \

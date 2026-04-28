@@ -67,6 +67,24 @@ jobs:
         run: |
           chmod +x unity/scripts/build-apple.sh
           unity/scripts/build-apple.sh "${{ matrix.platform }}" "${{ github.workspace }}/artifacts/${{ matrix.platform }}"
+      - name: Verify macOS dylib
+        if: matrix.platform == 'macos'
+        run: |
+          DYLIB="${{ github.workspace }}/artifacts/macos/libwcdb.dylib"
+          file "$DYLIB"
+          archs="$(lipo -archs "$DYLIB")"
+          echo "Architectures: $archs"
+          if [[ " $archs " != *" arm64 "* || " $archs " != *" x86_64 "* ]]; then
+            echo "Expected macOS libwcdb.dylib to contain arm64 and x86_64 slices, got: $archs" >&2
+            exit 1
+          fi
+          codesign --verify --strict --verbose=4 "$DYLIB"
+          python3 - "$DYLIB" <<'PY'
+          import ctypes
+          import sys
+
+          ctypes.CDLL(sys.argv[1])
+          PY
       - name: Upload Apple artifacts
         uses: actions/upload-artifact@v4
         with:
